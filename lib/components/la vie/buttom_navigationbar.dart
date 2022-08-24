@@ -8,9 +8,23 @@ class ButtonNavigationBar extends StatelessWidget{
     return BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(FaIcon(FontAwesomeIcons.leave)),
-
-          )
+            icon: FaIcon(FontAwesomeIcons.leaf),
+          ),
+          BottomNavigationBarItem(
+            icon: FaIcon(FontAwesomeIcons.leaf),
+          ),
+          BottomNavigationBarItem(
+            icon: FaIcon(FontAwesomeIcons.leaf),
+          ),
+          BottomNavigationBarItem(
+            icon: FaIcon(FontAwesomeIcons.leaf),
+          ),
+          BottomNavigationBarItem(
+            icon: FaIcon(FontAwesomeIcons.leaf),
+          ),
+          BottomNavigationBarItem(
+            icon: FaIcon(FontAwesomeIcons.leaf),
+          ),
         ]
       );
   }

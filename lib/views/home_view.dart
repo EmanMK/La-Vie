@@ -1,86 +1,138 @@
+import 'dart:async';
+
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:untitled8/components/appbar/logo_appbar.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:untitled8/components/styles/colors.dart';
-import'package:untitled8/services/google_auth/google_signin_api.dart';
-import 'package:untitled8/components/styles/text_styles.dart';
 import 'package:untitled8/components/la vie/logo.dart';
+import 'package:untitled8/components/home_view/product_card.dart';
+import '../components/home_view/filters.dart';
+import '../components/home_view/search_bar.dart';
+
+// block - model
+import 'package:untitled8/bloc/products/fetch_products/fetch_products_cubit.dart';
 
 
-
-class Home_View extends StatelessWidget {
-  GoogleSignInAccount? user;
+class Home_View extends StatefulWidget {
   Home_View({Key? key}) : super(key: key);
-  Home_View.fromGoogleOAuth({Key? key,required this.user}) : super(key: key);
 
+  @override
+  _Home_ViewState createState() => _Home_ViewState();
+}
+
+class _Home_ViewState extends State<Home_View> {
+
+  @override
+  void initState() {
+    FetchProductsCubit().fetchProducts();
+    super.initState();
+  }
+  FetchProductsCubit? productsCubit;
+
+  void getDate(context){
+    productsCubit = FetchProductsCubit().get(context);
+    productsCubit!.fetchProducts();
+    Timer((Duration(seconds: 5)),(){
+      print(productsCubit!.products![2].name);
+      print(productsCubit!.products!.length);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    productsCubit = FetchProductsCubit().get(context);
+    getDate(context);
     return Scaffold(
-      appBar:AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0.00,
-        title:Logo(height:50,width: 100),
-        centerTitle: true,
-      ),
-
       body: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-        ),
-
-        child: Container(
-          margin: EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Row(
-                children:[
-                  Form(
-                    child: TextFormField(
-                      decoration: InputDecoration(
-                        prefix: Icon(Icons.search,color: CustomColors.LIGHT_GRAY,),
-                        label:Text('search',style: TextStyles.LABELS,),
-                        focusColor: CustomColors.DARK_GRAY,
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(5)),
-                      ),
+        color: Colors.white,
+        padding: EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(height: 30),
+            Logo(height: 50, width: 100),
+            SizedBox(height: 10),
+            SearchBar(),
+            SizedBox(height: 10),
+            Filters(),
+            SizedBox(height: 10,),
+            SizedBox(
+              width: double.infinity,
+              height: 500,
+              child: BlocConsumer<FetchProductsCubit, FetchProductsState>(
+                listener: (context, state) {
+                },
+                builder: (context, state) {
+                  return productsCubit!.products!.length > 0
+                    ?GridView.builder(
+                    padding: EdgeInsets.only(top: 60),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 20,
+                      mainAxisSpacing: 60,
                     ),
-                  ),
-                  SizedBox(width:5,),
-                  Container(
-                    decoration:BoxDecoration(
-                      color: CustomColors.PRIMARLY,
+                    itemCount: productsCubit!.products!.length,
+                    itemBuilder: (context, index) => ProductCard(
+                      imageUrl: productsCubit!.products![index].imageUrl,
+                      name: productsCubit!.products![index].name,
+                      price: productsCubit!.products![index].price,
                     ),
-                    child: Icon(Icons.shopping_cart_outlined),
                   )
-              ]
+                    :Center(
+                      child: Container(
+                        height: 50,
+                        width: 200,
+                        child: ElevatedButton(
+                          onPressed: (){
+                            productsCubit?.refreshState();
+                            print("from here");
+                            print(productsCubit!.products![0].name);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            primary: CustomColors.PRIMARLY,
+                            padding: EdgeInsets.symmetric(horizontal: 26)
+                          ),
+                          child:Text('Reload',style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            ),),
+                          ),
+                      ),
+                    );
+                },
               ),
+            ),
+          ],
 
-              Row(
-                children: [
-                  Container(
-                    color: CustomColors.LIGHTER_GRAY,
-                    child: Text('plants',style:TextStyles.LABELS),
-                  ),
-                  SizedBox(width: 3,)
-                ],
-              ),
-              SizedBox(height: 10,),
-              Container(
-                child: Row(
-                  children: [
-                    Text(user!.email,style: TextStyles.PRIMARLY_HEADER,),
-                    Text(user!.id,style: TextStyles.PRIMARLY_HEADER,),
-
-                  ],
-                ),
-              )
-
-
-            ],
-
-          ),
         ),
+      ),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.3),
+              offset: Offset(-5,0),
+              blurRadius: 7
+            ),
+          ]
+        ),
+        child: CurvedNavigationBar(
+        backgroundColor: Colors.white,
+        buttonBackgroundColor: CustomColors.PRIMARLY,
+        animationCurve: Curves.fastOutSlowIn,
+        items: <Widget>[
+          Image.asset("assets/icons/leave.png",height: 25,width: 25,),
+          Image.asset("assets/icons/qr-code-scan.png",height: 25,width: 25,),
+          Image.asset("assets/icons/home.png",height: 25,width: 25,color: Colors.black,),
+          Image.asset("assets/icons/bell.png",height: 25,width: 25,),
+          Image.asset("assets/icons/profile.png",height: 25,width: 25,),
+        ],
+        onTap: (index) {
+          //Handle button tap
+        },
+    ),
       ),
     );
   }

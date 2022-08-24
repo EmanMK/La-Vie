@@ -5,12 +5,18 @@ abstract class TextStyles {
   static const TextStyle BLACK_HEADER = TextStyle(
       fontFamily: 'Montserrat',
       color: Colors.black,
-      fontSize: 30,
+      fontSize: 20,
       fontWeight: FontWeight.w700);
 
   static const TextStyle LABELS = TextStyle(
       fontFamily: 'Montserrat',
       color: CustomColors.LIGHT_GRAY,
+      fontSize: 14,
+      fontWeight: FontWeight.w500);
+
+  static const TextStyle WHITE_BUTTON_FONT =TextStyle(
+      fontFamily: 'Montserrat',
+      color: Colors.white,
       fontSize: 14,
       fontWeight: FontWeight.w500);
 
