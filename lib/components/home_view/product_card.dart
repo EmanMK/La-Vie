@@ -67,7 +67,7 @@ class ProductCard extends StatelessWidget {
                 child: Row(
                   children: [
                     Image.network(
-                      imageUrl!,
+                      "https://lavie.orangedigitalcenteregypt.com${imageUrl!}",
                       height: 160,
                       width:90,
                     ),

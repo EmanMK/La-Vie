@@ -35,11 +35,17 @@ class Auth_By_Other extends StatelessWidget {
                   listener: (context, state){
                     print(state);
                     if (state is GoogleAuthSucceeded) {
-                          Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(
-                                builder: (context) => Home_View(),
-                              )
-                          );
+                      FetchProductsCubit productCubit = FetchProductsCubit().get(context);
+                      productCubit.fetchProducts();
+                      Timer(Duration(seconds: 3), ()
+                      {
+                        Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  Home_View(products: productCubit.products,),
+                            )
+                        );
+                      });
                       }
                   },
                   builder: (context, state) {
@@ -53,6 +59,16 @@ class Auth_By_Other extends StatelessWidget {
                         }
                         else {
                           await googleAuthCubit.signinWithGoogle(user);
+                            FetchProductsCubit productCubit = FetchProductsCubit().get(context);
+                            productCubit.fetchProducts();
+                            Timer(Duration(seconds: 7), (){
+                              Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                    builder: (context) => Home_View(products: productCubit.products,),
+                                  )
+                              );
+                            });
+
                         }
                       },
                     );
